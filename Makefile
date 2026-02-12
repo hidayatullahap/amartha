@@ -1,3 +1,8 @@
+.PHONY: wire
+wire:
+	go mod tidy
+	go run -mod=mod github.com/google/wire/cmd/wire src/wire/wire.go
+
 .PHONY: run
 
 run:
