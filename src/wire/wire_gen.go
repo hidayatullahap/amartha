@@ -7,7 +7,7 @@
 package wire
 
 import (
-	"amartha/src/controllers/hello"
+	"amartha/src/loans/controller"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/server"
 )
@@ -20,9 +20,9 @@ import (
 
 func Initialize() (*server.Server, func(), error) {
 	echoEcho := echo.NewEcho()
-	helloController := hello_controller.NewHelloController()
+	loanController := controller.NewLoanController()
 	controllers := &server.Controllers{
-		HelloController: helloController,
+		LoanController: loanController,
 	}
 	serverServer := server.NewServer(echoEcho, controllers)
 	return serverServer, func() {

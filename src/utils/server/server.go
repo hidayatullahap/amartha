@@ -1,7 +1,7 @@
 package server
 
 import (
-	hello_controller "amartha/src/controllers/hello"
+	loanController "amartha/src/loans/controller"
 	"fmt"
 	"log"
 	"os"
@@ -16,7 +16,7 @@ type Server struct {
 }
 
 type Controllers struct {
-	HelloController hello_controller.HelloController
+	loanController.LoanController
 }
 
 var RoutesSet = wire.NewSet(wire.Struct(new(Controllers), "*"), NewServer)
@@ -32,6 +32,6 @@ func NewServer(
 }
 
 func (server *Server) Run() {
-	server.controllers.HelloController.DecorateRoutes(server.echo)
+	server.controllers.LoanController.DecorateRoutes(server.echo)
 	log.Fatal(server.echo.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }
