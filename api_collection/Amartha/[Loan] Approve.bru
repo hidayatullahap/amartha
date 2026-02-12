@@ -1,0 +1,26 @@
+meta {
+  name: [Loan] Approve
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{base_url}}/loans/:id/approve
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "body":"todo"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

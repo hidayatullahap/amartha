@@ -1,15 +1,16 @@
 meta {
-  name: Get Loan
+  name: [Loan] Detail
   type: http
   seq: 1
 }
 
 get {
-  url: {{base_url}}/loans
+  url: {{base_url}}/loans/1
   body: none
   auth: inherit
 }
 
 settings {
   encodeUrl: true
+  timeout: 0
 }

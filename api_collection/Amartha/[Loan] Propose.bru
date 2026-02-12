@@ -1,0 +1,22 @@
+meta {
+  name: [Loan] Propose
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{base_url}}/loans
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "body":"todo"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

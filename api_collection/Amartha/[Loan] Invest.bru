@@ -1,0 +1,26 @@
+meta {
+  name: [Loan] Invest
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/loans/:id/invest
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: 1
+}
+
+body:json {
+  {
+    "body":"todo"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
