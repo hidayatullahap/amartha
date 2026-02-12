@@ -2,6 +2,7 @@ package server
 
 import (
 	loanController "amartha/src/loans/controller"
+	"amartha/src/utils/database"
 	"fmt"
 	"log"
 	"os"
@@ -32,6 +33,7 @@ func NewServer(
 }
 
 func (server *Server) Run() {
+	database.Run()
 	server.controllers.LoanController.DecorateRoutes(server.echo)
 	log.Fatal(server.echo.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }

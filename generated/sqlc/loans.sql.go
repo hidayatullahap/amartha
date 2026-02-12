@@ -3,7 +3,7 @@
 //   sqlc v1.30.0
 // source: loans.sql
 
-package amartha
+package sqlc
 
 import (
 	"context"
