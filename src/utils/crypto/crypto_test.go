@@ -56,41 +56,56 @@ func TestCreateToken(t *testing.T) {
 		})
 	}
 }
+
 func TestVerifyToken(t *testing.T) {
 	tests := []struct {
 		name       string
 		userId     string
 		setupErr   bool
 		wantErr    bool
-		wantUserId string
+		wantUserId *int64
 	}{
 		{
-			name:       "Valid token",
-			userId:     "user123",
+			name:       "Valid token with numeric user ID",
+			userId:     "12345",
 			setupErr:   false,
 			wantErr:    false,
-			wantUserId: "user123",
+			wantUserId: func() *int64 { v := int64(12345); return &v }(),
 		},
 		{
-			name:       "Valid token with special characters",
-			userId:     "user@example.com",
+			name:       "Valid token with large numeric user ID",
+			userId:     "9223372036854775807",
 			setupErr:   false,
 			wantErr:    false,
-			wantUserId: "user@example.com",
+			wantUserId: func() *int64 { v := int64(9223372036854775807); return &v }(),
 		},
 		{
 			name:       "Invalid token signature",
-			userId:     "user123",
+			userId:     "12345",
 			setupErr:   false,
 			wantErr:    true,
-			wantUserId: "",
+			wantUserId: nil,
 		},
 		{
 			name:       "Malformed token",
 			userId:     "",
 			setupErr:   false,
 			wantErr:    true,
-			wantUserId: "",
+			wantUserId: nil,
+		},
+		{
+			name:       "User ID not numeric",
+			userId:     "user@example.com",
+			setupErr:   false,
+			wantErr:    true,
+			wantUserId: nil,
+		},
+		{
+			name:       "Empty token string",
+			userId:     "",
+			setupErr:   false,
+			wantErr:    true,
+			wantUserId: nil,
 		},
 	}
 
@@ -98,11 +113,14 @@ func TestVerifyToken(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var tokenString string
 
-			if tt.name == "Invalid token signature" {
-				tokenString = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidXNlcjEyMyIsImV4cCI6OTk5OTk5OTk5OX0.invalid"
-			} else if tt.name == "Malformed token" {
+			switch tt.name {
+			case "Invalid token signature":
+				tokenString = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTIzNDUiLCJleHAiOjk5OTk5OTk5OTl9.invalid"
+			case "Malformed token":
 				tokenString = "invalid.token.string"
-			} else {
+			case "Empty token string":
+				tokenString = ""
+			default:
 				token, err := CreateToken(tt.userId)
 				assert.NoError(t, err)
 				tokenString = token

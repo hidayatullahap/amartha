@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"time"
 
+	uerror "amartha/src/utils/error"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -19,6 +21,9 @@ func CreateToken(userId string) (string, error) {
 }
 
 func VerifyToken(tokenString string) (*int64, error) {
+	if tokenString == "" {
+		return nil, uerror.ErrUnauthorized
+	}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		return secretKey, nil
 	})
