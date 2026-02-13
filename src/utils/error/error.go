@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+
+	"modernc.org/sqlite"
 )
 
 var (
@@ -37,5 +39,13 @@ func GetHttpCodeByError(err error) int {
 			}
 		}
 	}
+
+	var sqliteErr *sqlite.Error
+	if errors.As(err, &sqliteErr) {
+		if sqliteErr.Code() == 1555 {
+			return http.StatusConflict
+		}
+	}
+
 	return http.StatusInternalServerError
 }
