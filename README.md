@@ -1,6 +1,16 @@
-How to run:
+## How to run this app:
+## Prequisite
+Please make sure port 8080 is free
 
-Run this command on termimal
+## Option 1
+Run from docker
+```
+$ docker compose build --no-cache
+$ docker compose up -d
+```
+
+## Option 2
+Run directy with this command on termimal
 ```
 $ make run
 ```
