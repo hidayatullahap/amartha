@@ -15,7 +15,7 @@ import (
 func NewDBConnection(config *config.Config) *sql.DB {
 	ctx := context.Background()
 
-	db, err := sql.Open("sqlite3", config.DB.Name)
+	db, err := sql.Open("sqlite", config.DB.Name)
 	if err != nil {
 		log.Fatalf("Error opening database: %v", err)
 	}
