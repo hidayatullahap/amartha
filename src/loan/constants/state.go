@@ -1,5 +1,7 @@
 package constants
 
+import "fmt"
+
 type LoanState int
 
 const (
@@ -9,10 +11,36 @@ const (
 	StateDisbursed
 )
 
-func (s LoanState) String() string {
-	return [...]string{"proposed", "approved", "invested", "disbursed"}[s]
+var stateNames = [...]string{
+	StateProposed:  "proposed",
+	StateApproved:  "approved",
+	StateInvested:  "invested",
+	StateDisbursed: "disbursed",
 }
 
-func CanUpdateState(currentState LoanState, newState LoanState) bool {
-	return newState > currentState
+var stateMap = map[string]LoanState{
+	"proposed":  StateProposed,
+	"approved":  StateApproved,
+	"invested":  StateInvested,
+	"disbursed": StateDisbursed,
+}
+
+func (s LoanState) String() string {
+	if s < 0 || int(s) >= len(stateNames) {
+		return fmt.Sprintf("LoanState(%d)", s)
+	}
+	return stateNames[s]
+}
+
+func (s LoanState) IsValid() bool {
+	return s >= StateProposed && s <= StateDisbursed
+}
+
+func CanUpdateState(currentState, newState LoanState) bool {
+	return newState > currentState && newState.IsValid()
+}
+
+func ToLoanState(s string) (LoanState, bool) {
+	state, ok := stateMap[s]
+	return state, ok
 }
