@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"os"
 
 	_ "modernc.org/sqlite"
 
@@ -14,7 +15,7 @@ import (
 func Run() error {
 	ctx := context.Background()
 
-	db, err := sql.Open("sqlite", ":memory:")
+	db, err := sql.Open("sqlite", os.Getenv("DB_NAME"))
 	if err != nil {
 		return err
 	}

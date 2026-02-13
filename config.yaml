@@ -1,0 +1,5 @@
+db:
+  name: amartha.db
+
+server:
+  port: 8080

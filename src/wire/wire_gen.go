@@ -8,6 +8,7 @@ package wire
 
 import (
 	"amartha/src/loans/controller"
+	"amartha/src/utils/config"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/server"
 )
@@ -24,7 +25,8 @@ func Initialize() (*server.Server, func(), error) {
 	controllers := &server.Controllers{
 		LoanController: loanController,
 	}
-	serverServer := server.NewServer(echoEcho, controllers)
+	configConfig := config.LoadConfig()
+	serverServer := server.NewServer(echoEcho, controllers, configConfig)
 	return serverServer, func() {
 	}, nil
 }

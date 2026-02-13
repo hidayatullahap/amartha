@@ -2,10 +2,9 @@ package server
 
 import (
 	loanController "amartha/src/loans/controller"
-	"amartha/src/utils/database"
+	"amartha/src/utils/config"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/google/wire"
 	"github.com/labstack/echo/v5"
@@ -14,6 +13,7 @@ import (
 type Server struct {
 	echo        *echo.Echo
 	controllers *Controllers
+	config      *config.Config
 }
 
 type Controllers struct {
@@ -25,15 +25,16 @@ var RoutesSet = wire.NewSet(wire.Struct(new(Controllers), "*"), NewServer)
 func NewServer(
 	echo *echo.Echo,
 	controllers *Controllers,
+	config *config.Config,
 ) *Server {
 	return &Server{
 		echo,
 		controllers,
+		config,
 	}
 }
 
 func (server *Server) Run() {
-	database.Run()
 	server.controllers.LoanController.DecorateRoutes(server.echo)
-	log.Fatal(server.echo.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
+	log.Fatal(server.echo.Start(fmt.Sprintf(":%d", server.config.Server.Port)))
 }
