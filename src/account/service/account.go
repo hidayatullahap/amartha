@@ -3,9 +3,8 @@ package service
 import (
 	"amartha/generated/sqlc"
 	"amartha/src/account/response"
+	"amartha/src/utils/crypto"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 )
 
 type AccountService interface {
@@ -26,9 +25,10 @@ func (s accountService) Login(ctx context.Context, username string) (*response.L
 		return nil, err
 	}
 
-	h := sha256.New()
-	h.Write([]byte(user.ID))
-	shaString := hex.EncodeToString(h.Sum(nil))
+	jwt, err := crypto.CreateToken(user.ID)
+	if err != nil {
+		return nil, err
+	}
 
-	return &response.LoginResponse{Token: shaString}, nil
+	return &response.LoginResponse{Token: jwt}, nil
 }
