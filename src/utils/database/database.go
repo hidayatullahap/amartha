@@ -4,33 +4,29 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"os"
 
 	_ "modernc.org/sqlite"
 
 	ddl "amartha/db"
 	"amartha/generated/sqlc"
+	"amartha/src/utils/config"
 )
 
-func Run() error {
+func NewDBConnection(config *config.Config) *sql.DB {
 	ctx := context.Background()
 
-	db, err := sql.Open("sqlite", os.Getenv("DB_NAME"))
+	db, err := sql.Open("sqlite3", config.DB.Name)
 	if err != nil {
-		return err
+		log.Fatalf("Error opening database: %v", err)
 	}
 
 	if _, err := db.ExecContext(ctx, ddl.DDL); err != nil {
-		return err
+		log.Fatalf("Error executing DDL: %v", err)
 	}
 
-	queries := sqlc.New(db)
+	return db
+}
 
-	authors, err := queries.ListLoans(ctx)
-	if err != nil {
-		return err
-	}
-
-	log.Println(authors)
-	return nil
+func NewQueries(db *sql.DB) *sqlc.Queries {
+	return sqlc.New(db)
 }
