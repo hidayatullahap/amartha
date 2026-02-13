@@ -126,7 +126,8 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 		return nil, err
 	}
 
-	if newTotal == loan.PrincipalAmount {
+	isFullyFunded := newTotal == loan.PrincipalAmount
+	if isFullyFunded {
 		err = qtx.UpdateLoanState(ctx, sqlc.UpdateLoanStateParams{
 			ID:    req.LoanID,
 			State: sql.NullString{Valid: true, String: constants.StateInvested.String()},
@@ -134,16 +135,18 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 		if err != nil {
 			return nil, err
 		}
+	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	if isFullyFunded {
 		select {
 		case s.loanEvent.EmailChan <- event.EmailEvent{LoanID: req.LoanID}:
 		default:
 			log.Println("Email buffer full, skipping event")
 		}
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
 	}
 
 	return &response.CreateLoanInvestResponse{
