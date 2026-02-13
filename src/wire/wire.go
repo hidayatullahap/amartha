@@ -12,6 +12,7 @@ import (
 	"amartha/src/utils/config"
 	"amartha/src/utils/database"
 	"amartha/src/utils/echo"
+	"amartha/src/utils/echo/middleware"
 	"amartha/src/utils/server"
 
 	"github.com/google/wire"
@@ -21,6 +22,7 @@ import (
 func Initialize() (*server.Server, func(), error) {
 	panic(
 		wire.Build(
+			middleware.NewAuthMiddleware,
 			database.NewQueries,
 			database.NewDBConnection,
 			config.LoadConfig,

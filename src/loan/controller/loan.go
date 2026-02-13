@@ -2,6 +2,7 @@ package controller
 
 import (
 	"amartha/src/loan/service"
+	"amartha/src/utils/echo/middleware"
 	"fmt"
 	"net/http"
 
@@ -9,17 +10,19 @@ import (
 )
 
 type LoanController struct {
-	svc service.LoanService
+	svc  service.LoanService
+	auth *middleware.AuthMiddleware
 }
 
-func NewLoanController(svc service.LoanService) LoanController {
+func NewLoanController(svc service.LoanService, auth *middleware.AuthMiddleware) LoanController {
 	return LoanController{
 		svc,
+		auth,
 	}
 }
 
 func (r *LoanController) DecorateRoutes(e *echo.Echo) {
-	routeGroup := e.Group("/loans")
+	routeGroup := e.Group("/loans", r.auth.Authenticate)
 	routeGroup.POST("", func(c *echo.Context) error {
 		r.svc.CreateLoan()
 		return c.JSON(http.StatusOK, "[TODO] Create a new loan state: proposed")
