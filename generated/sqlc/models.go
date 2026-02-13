@@ -16,14 +16,14 @@ type Flag struct {
 type Investment struct {
 	ID         string
 	LoanID     string
-	InvestorID string
+	InvestorID int64
 	Amount     float64
 	CreatedAt  sql.NullTime
 }
 
 type Loan struct {
 	ID                 string
-	BorrowerID         string
+	BorrowerID         int64
 	PrincipalAmount    float64
 	Rate               float64
 	Roi                float64
@@ -38,7 +38,7 @@ type LoanDetail struct {
 	FieldValidatorID   sql.NullString
 	VisitProofUrl      sql.NullString
 	ApprovedAt         sql.NullTime
-	FieldOfficerID     sql.NullString
+	FieldOfficerID     sql.NullInt64
 	SignedAgreementUrl sql.NullString
 	DisbursedAt        sql.NullTime
 }

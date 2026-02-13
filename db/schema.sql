@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS loans (
     id TEXT PRIMARY KEY,
-    borrower_id TEXT NOT NULL,
+    borrower_id INTEGER NOT NULL,
     principal_amount REAL NOT NULL,
     rate REAL NOT NULL,
     roi REAL NOT NULL,
@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS loan_details (
     field_validator_id TEXT,
     visit_proof_url TEXT,
     approved_at DATETIME,
-    field_officer_id TEXT,
+    field_officer_id INTEGER,
     signed_agreement_url TEXT,
     disbursed_at DATETIME,
     FOREIGN KEY (loan_id) REFERENCES loans(id)
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS loan_details (
 CREATE TABLE IF NOT EXISTS investments (
     id TEXT PRIMARY KEY,
     loan_id TEXT NOT NULL,
-    investor_id TEXT NOT NULL,
+    investor_id INTEGER NOT NULL,
     amount REAL NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (loan_id) REFERENCES loans(id)
