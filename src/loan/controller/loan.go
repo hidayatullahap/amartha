@@ -55,14 +55,26 @@ func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 
 	routeGroup.POST("/:id/approve", func(c *echo.Context) error {
 		id := c.Param("id")
+		var body request.CreateLoanDetailRequest
+
+		if err := c.Bind(&body); err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+		body.LoanID = id
+
 		_, _, err := r.guard.ValidateStatusTransition(c.Request().Context(), id, constants.StateApproved.String())
 		if err != nil {
 			code := uerror.GetHttpCodeByError(err)
 			return echo.NewHTTPError(code, err.Error())
 		}
 
-		r.svc.ApproveLoan()
-		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Approve loan id: %s", id))
+		data, err := r.svc.ApproveLoan(c.Request().Context(), body)
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+		return c.JSON(http.StatusOK, data)
 	}, r.auth.Authorize(constants.AdminRoles))
 
 	routeGroup.POST("/:id/invest", func(c *echo.Context) error {

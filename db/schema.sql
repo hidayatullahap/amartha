@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS loans (
 
 CREATE TABLE IF NOT EXISTS loan_details (
     loan_id TEXT PRIMARY KEY,
-    field_validator_id TEXT,
+    field_validator_id INTEGER,
     visit_proof_url TEXT,
     approved_at DATETIME,
     field_officer_id INTEGER,

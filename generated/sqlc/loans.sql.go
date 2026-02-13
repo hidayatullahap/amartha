@@ -36,6 +36,30 @@ func (q *Queries) CreateLoan(ctx context.Context, arg CreateLoanParams) error {
 	return err
 }
 
+const createLoanDetail = `-- name: CreateLoanDetail :exec
+INSERT INTO loan_details (loan_id, field_validator_id, visit_proof_url, approved_at, field_officer_id)
+VALUES (?, ?, ?, ?, ?)
+`
+
+type CreateLoanDetailParams struct {
+	LoanID           string
+	FieldValidatorID sql.NullInt64
+	VisitProofUrl    sql.NullString
+	ApprovedAt       sql.NullTime
+	FieldOfficerID   sql.NullInt64
+}
+
+func (q *Queries) CreateLoanDetail(ctx context.Context, arg CreateLoanDetailParams) error {
+	_, err := q.db.ExecContext(ctx, createLoanDetail,
+		arg.LoanID,
+		arg.FieldValidatorID,
+		arg.VisitProofUrl,
+		arg.ApprovedAt,
+		arg.FieldOfficerID,
+	)
+	return err
+}
+
 const getLoan = `-- name: GetLoan :one
 SELECT id, borrower_id, principal_amount, rate, roi, agreement_letter_url, state, total_invested, created_at FROM loans
 WHERE id = ? LIMIT 1

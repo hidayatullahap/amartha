@@ -35,7 +35,7 @@ type Loan struct {
 
 type LoanDetail struct {
 	LoanID             string
-	FieldValidatorID   sql.NullString
+	FieldValidatorID   sql.NullInt64
 	VisitProofUrl      sql.NullString
 	ApprovedAt         sql.NullTime
 	FieldOfficerID     sql.NullInt64

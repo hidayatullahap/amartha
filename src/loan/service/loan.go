@@ -7,6 +7,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -15,7 +16,7 @@ type LoanService interface {
 	GetLoans()
 	GetLoan()
 	CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*response.CreateLoanResponse, error)
-	ApproveLoan()
+	ApproveLoan(ctx context.Context, req request.CreateLoanDetailRequest) (*response.CreateLoanDetailResponse, error)
 	InvestLoan()
 	DisburseLoan()
 }
@@ -26,10 +27,6 @@ type loanService struct {
 
 func NewLoanService(queries *sqlc.Queries) LoanService {
 	return loanService{queries}
-}
-
-func (s loanService) ApproveLoan() {
-	fmt.Println("approve loan")
 }
 
 func (s loanService) CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*response.CreateLoanResponse, error) {
@@ -49,6 +46,11 @@ func (s loanService) CreateLoan(ctx context.Context, req request.CreateLoanReque
 	return &response.CreateLoanResponse{
 		ID: id,
 	}, nil
+}
+
+func (s loanService) ApproveLoan(ctx context.Context, req request.CreateLoanDetailRequest) (*response.CreateLoanDetailResponse, error) {
+	log.Println(req)
+	return nil, nil
 }
 
 func (s loanService) DisburseLoan() {
