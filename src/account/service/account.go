@@ -13,10 +13,10 @@ type AccountService interface {
 }
 
 type accountService struct {
-	queries *sqlc.Queries
+	queries sqlc.Querier
 }
 
-func NewAccountService(queries *sqlc.Queries) AccountService {
+func NewAccountService(queries sqlc.Querier) AccountService {
 	return accountService{queries}
 }
 

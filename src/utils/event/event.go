@@ -12,10 +12,10 @@ type EmailEvent struct {
 
 type LoanEvent struct {
 	EmailChan chan EmailEvent
-	queries   *sqlc.Queries
+	queries   sqlc.Querier
 }
 
-func NewLoanEvent(queries *sqlc.Queries) *LoanEvent {
+func NewLoanEvent(queries sqlc.Querier) *LoanEvent {
 	return &LoanEvent{
 		EmailChan: make(chan EmailEvent, 100),
 		queries:   queries,

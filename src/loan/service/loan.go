@@ -26,11 +26,11 @@ type LoanService interface {
 
 type loanService struct {
 	db        *sql.DB
-	queries   *sqlc.Queries
+	queries   sqlc.Querier
 	loanEvent *event.LoanEvent
 }
 
-func NewLoanService(db *sql.DB, queries *sqlc.Queries, loanEvent *event.LoanEvent) LoanService {
+func NewLoanService(db *sql.DB, queries sqlc.Querier, loanEvent *event.LoanEvent) LoanService {
 	return loanService{db, queries, loanEvent}
 }
 
@@ -76,7 +76,8 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 	}
 	defer tx.Rollback()
 
-	qtx := s.queries.WithTx(tx)
+	q, _ := s.queries.(*sqlc.Queries)
+	qtx := q.WithTx(tx)
 
 	loan, err := qtx.GetLoan(ctx, req.LoanID)
 	if err != nil {
@@ -137,7 +138,8 @@ func (s loanService) DisburseLoan(ctx context.Context, req request.DisburseLoanR
 	}
 	defer tx.Rollback()
 
-	qtx := s.queries.WithTx(tx)
+	q, _ := s.queries.(*sqlc.Queries)
+	qtx := q.WithTx(tx)
 
 	err = qtx.UpdateLoanState(ctx, sqlc.UpdateLoanStateParams{
 		ID:    req.LoanID,

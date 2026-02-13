@@ -12,10 +12,10 @@ type GuardLoanService interface {
 }
 
 type guardLoanService struct {
-	queries *sqlc.Queries
+	queries sqlc.Querier
 }
 
-func NewGuardLoanService(queries *sqlc.Queries) GuardLoanService {
+func NewGuardLoanService(queries sqlc.Querier) GuardLoanService {
 	return guardLoanService{queries}
 }
 

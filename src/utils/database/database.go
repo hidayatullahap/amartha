@@ -37,6 +37,6 @@ func NewDBConnection(config *config.Config) *sql.DB {
 	return db
 }
 
-func NewQueries(db *sql.DB) *sqlc.Queries {
+func NewQueries(db *sql.DB) sqlc.Querier {
 	return sqlc.New(db)
 }

@@ -11,10 +11,10 @@ import (
 )
 
 type AuthMiddleware struct {
-	queries *sqlc.Queries
+	queries sqlc.Querier
 }
 
-func NewAuthMiddleware(queries *sqlc.Queries) *AuthMiddleware {
+func NewAuthMiddleware(queries sqlc.Querier) *AuthMiddleware {
 	return &AuthMiddleware{queries}
 }
 
