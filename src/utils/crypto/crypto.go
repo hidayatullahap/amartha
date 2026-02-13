@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -17,14 +18,19 @@ func CreateToken(userId string) (string, error) {
 	return token.SignedString(secretKey)
 }
 
-func VerifyToken(tokenString string) (string, error) {
+func VerifyToken(tokenString string) (*int64, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 		return secretKey, nil
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims["user_id"].(string), nil
+		num, err := strconv.ParseInt(claims["user_id"].(string), 10, 64)
+		if err != nil {
+			return nil, err
+		}
+
+		return &num, nil
 	}
 
-	return "", err
+	return nil, err
 }

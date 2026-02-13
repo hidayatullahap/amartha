@@ -5,6 +5,7 @@ import (
 	"amartha/src/account/response"
 	"amartha/src/utils/crypto"
 	"context"
+	"strconv"
 )
 
 type AccountService interface {
@@ -25,7 +26,7 @@ func (s accountService) Login(ctx context.Context, username string) (*response.L
 		return nil, err
 	}
 
-	jwt, err := crypto.CreateToken(user.ID)
+	jwt, err := crypto.CreateToken(strconv.FormatInt(user.ID, 10))
 	if err != nil {
 		return nil, err
 	}

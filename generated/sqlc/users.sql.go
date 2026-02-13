@@ -15,12 +15,12 @@ WHERE id = ?
 `
 
 type GetUserByIdRow struct {
-	ID       string
+	ID       int64
 	Username string
 	Role     string
 }
 
-func (q *Queries) GetUserById(ctx context.Context, id string) (GetUserByIdRow, error) {
+func (q *Queries) GetUserById(ctx context.Context, id int64) (GetUserByIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getUserById, id)
 	var i GetUserByIdRow
 	err := row.Scan(&i.ID, &i.Username, &i.Role)
@@ -33,7 +33,7 @@ WHERE username = ?
 `
 
 type GetUserByUsernameRow struct {
-	ID       string
+	ID       int64
 	Username string
 	Role     string
 }

@@ -30,7 +30,7 @@ func (m *AuthMiddleware) Authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 			return echo.ErrUnauthorized
 		}
 
-		user, err := m.queries.GetUserById(c.Request().Context(), userId)
+		user, err := m.queries.GetUserById(c.Request().Context(), *userId)
 		if err != nil {
 			return echo.ErrUnauthorized
 		}
