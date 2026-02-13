@@ -1,5 +1,7 @@
 package request
 
+import "time"
+
 type CreateLoanRequest struct {
 	BorrowerId         int64   `json:"borrower_id"`
 	PrincipalAmount    float64 `json:"principal_amount"`
@@ -9,8 +11,9 @@ type CreateLoanRequest struct {
 }
 
 type CreateLoanDetailRequest struct {
-	LoanID           string `json:"-"`
-	FieldValidatorID int64  `json:"field_validator_id"`
-	VisitProofUrl    string `json:"visit_proof_url"`
-	FieldOfficerID   int64  `json:"field_officer_id"`
+	LoanID           string    `json:"-"`
+	FieldValidatorID int64     `json:"field_validator_id"`
+	VisitProofUrl    string    `json:"visit_proof_url"`
+	FieldOfficerID   int64     `json:"field_officer_id"`
+	ApprovalDate     time.Time `json:"approval_date"`
 }

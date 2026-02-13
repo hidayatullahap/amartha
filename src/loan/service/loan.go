@@ -7,7 +7,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/google/uuid"
 )
@@ -49,8 +48,20 @@ func (s loanService) CreateLoan(ctx context.Context, req request.CreateLoanReque
 }
 
 func (s loanService) ApproveLoan(ctx context.Context, req request.CreateLoanDetailRequest) (*response.CreateLoanDetailResponse, error) {
-	log.Println(req)
-	return nil, nil
+	err := s.queries.CreateLoanDetail(ctx, sqlc.CreateLoanDetailParams{
+		LoanID:           req.LoanID,
+		FieldValidatorID: sql.NullInt64{Valid: true, Int64: req.FieldValidatorID},
+		VisitProofUrl:    sql.NullString{Valid: true, String: req.VisitProofUrl},
+		ApprovedAt:       sql.NullTime{Valid: true, Time: req.ApprovalDate},
+		FieldOfficerID:   sql.NullInt64{Valid: true, Int64: req.FieldOfficerID},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &response.CreateLoanDetailResponse{
+		LoanID: req.LoanID,
+	}, nil
 }
 
 func (s loanService) DisburseLoan() {

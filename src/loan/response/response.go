@@ -5,5 +5,5 @@ type CreateLoanResponse struct {
 }
 
 type CreateLoanDetailResponse struct {
-	ID string `json:"id"`
+	LoanID string `json:"loan_id"`
 }
