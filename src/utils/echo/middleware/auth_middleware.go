@@ -4,6 +4,8 @@ import (
 	"amartha/generated/sqlc"
 	"amartha/src/utils/constants"
 	"amartha/src/utils/crypto"
+	"net/http"
+	"slices"
 
 	"github.com/labstack/echo/v5"
 )
@@ -37,5 +39,24 @@ func (m *AuthMiddleware) Authenticate(next echo.HandlerFunc) echo.HandlerFunc {
 		c.Set(constants.UserRole, user.Role)
 
 		return next(c)
+	}
+}
+
+func (m *AuthMiddleware) Authorize(allowedRoles []string) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c *echo.Context) error {
+			role, ok := c.Get(constants.UserRole).(string)
+			if !ok {
+				return c.JSON(http.StatusUnauthorized, "invalid role")
+			}
+
+			isAllowed := slices.Contains(allowedRoles, role)
+
+			if !isAllowed {
+				return c.JSON(http.StatusForbidden, "insufficient permissions")
+			}
+
+			return next(c)
+		}
 	}
 }

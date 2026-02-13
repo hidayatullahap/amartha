@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"amartha/src/loan/constants"
 	"amartha/src/loan/service"
 	"amartha/src/utils/echo/middleware"
 	"fmt"
@@ -31,7 +32,7 @@ func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 		id := c.Param("id")
 		r.svc.ApproveLoan()
 		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Approve loan id: %s", id))
-	})
+	}, r.auth.Authorize(constants.AdminRoles))
 	routeGroup.POST("/:id/invest", func(c *echo.Context) error {
 		id := c.Param("id")
 		r.svc.InvestLoan()
