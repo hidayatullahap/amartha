@@ -1,6 +1,7 @@
 package service
 
 import (
+	"amartha/generated/sqlc"
 	"amartha/src/loan/request"
 	"context"
 	"fmt"
@@ -17,10 +18,11 @@ type LoanService interface {
 }
 
 type loanService struct {
+	queries *sqlc.Queries
 }
 
-func NewLoanService() LoanService {
-	return loanService{}
+func NewLoanService(queries *sqlc.Queries) LoanService {
+	return loanService{queries}
 }
 
 func (s loanService) ApproveLoan() {

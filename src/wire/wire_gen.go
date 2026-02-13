@@ -26,10 +26,10 @@ import (
 
 func Initialize() (*server.Server, func(), error) {
 	echoEcho := echo.NewEcho()
-	loanService := service.NewLoanService()
 	configConfig := config.LoadConfig()
 	db := database.NewDBConnection(configConfig)
 	queries := database.NewQueries(db)
+	loanService := service.NewLoanService(queries)
 	authMiddleware := middleware.NewAuthMiddleware(queries)
 	loanController := controller.NewLoanController(loanService, authMiddleware)
 	accountService := service2.NewAccountService(queries)
