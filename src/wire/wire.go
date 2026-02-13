@@ -5,10 +5,12 @@ package wire
 
 import (
 	accountController "amartha/src/account/controller"
+	accountService "amartha/src/account/service"
 	loanController "amartha/src/loan/controller"
 	loanService "amartha/src/loan/service"
 
 	"amartha/src/utils/config"
+	"amartha/src/utils/database"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/server"
 
@@ -19,8 +21,11 @@ import (
 func Initialize() (*server.Server, func(), error) {
 	panic(
 		wire.Build(
+			database.NewQueries,
+			database.NewDBConnection,
 			config.LoadConfig,
 			loanService.NewLoanService,
+			accountService.NewAccountService,
 			loanController.NewLoanController,
 			accountController.NewAccountController,
 			echo.NewEcho,

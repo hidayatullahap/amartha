@@ -29,3 +29,10 @@ CREATE TABLE IF NOT EXISTS investments (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (loan_id) REFERENCES loans(id)
 );
+
+CREATE TABLE IF NOT EXISTS users (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL,
+    role TEXT NOT NULL, 
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

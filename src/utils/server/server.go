@@ -37,6 +37,7 @@ func NewServer(
 }
 
 func (server *Server) Run() {
+	server.controllers.AccountController.DecorateRoutes(server.echo)
 	server.controllers.LoanController.DecorateRoutes(server.echo)
 	log.Fatal(server.echo.Start(fmt.Sprintf(":%d", server.config.Server.Port)))
 }

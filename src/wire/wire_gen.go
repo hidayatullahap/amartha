@@ -8,9 +8,11 @@ package wire
 
 import (
 	controller2 "amartha/src/account/controller"
+	service2 "amartha/src/account/service"
 	"amartha/src/loan/controller"
 	"amartha/src/loan/service"
 	"amartha/src/utils/config"
+	"amartha/src/utils/database"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/server"
 )
@@ -25,12 +27,15 @@ func Initialize() (*server.Server, func(), error) {
 	echoEcho := echo.NewEcho()
 	loanService := service.NewLoanService()
 	loanController := controller.NewLoanController(loanService)
-	accountController := controller2.NewAccountController()
+	configConfig := config.LoadConfig()
+	db := database.NewDBConnection(configConfig)
+	queries := database.NewQueries(db)
+	accountService := service2.NewAccountService(queries)
+	accountController := controller2.NewAccountController(accountService)
 	controllers := &server.Controllers{
 		LoanController:    loanController,
 		AccountController: accountController,
 	}
-	configConfig := config.LoadConfig()
 	serverServer := server.NewServer(echoEcho, controllers, configConfig)
 	return serverServer, func() {
 	}, nil
