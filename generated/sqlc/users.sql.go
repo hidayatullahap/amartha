@@ -9,20 +9,38 @@ import (
 	"context"
 )
 
-const getUser = `-- name: GetUser :one
+const getUserById = `-- name: GetUserById :one
 SELECT id, username, role FROM users
-WHERE username = ?
+WHERE id = ?
 `
 
-type GetUserRow struct {
+type GetUserByIdRow struct {
 	ID       string
 	Username string
 	Role     string
 }
 
-func (q *Queries) GetUser(ctx context.Context, username string) (GetUserRow, error) {
-	row := q.db.QueryRowContext(ctx, getUser, username)
-	var i GetUserRow
+func (q *Queries) GetUserById(ctx context.Context, id string) (GetUserByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
+	var i GetUserByIdRow
+	err := row.Scan(&i.ID, &i.Username, &i.Role)
+	return i, err
+}
+
+const getUserByUsername = `-- name: GetUserByUsername :one
+SELECT id, username, role FROM users
+WHERE username = ?
+`
+
+type GetUserByUsernameRow struct {
+	ID       string
+	Username string
+	Role     string
+}
+
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUserByUsernameRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserByUsername, username)
+	var i GetUserByUsernameRow
 	err := row.Scan(&i.ID, &i.Username, &i.Role)
 	return i, err
 }

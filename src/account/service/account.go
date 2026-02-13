@@ -20,7 +20,7 @@ func NewAccountService(queries *sqlc.Queries) AccountService {
 }
 
 func (s accountService) Login(ctx context.Context, username string) (*response.LoginResponse, error) {
-	user, err := s.queries.GetUser(ctx, username)
+	user, err := s.queries.GetUserByUsername(ctx, username)
 	if err != nil {
 		return nil, err
 	}
