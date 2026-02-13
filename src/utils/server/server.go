@@ -1,6 +1,7 @@
 package server
 
 import (
+	accountController "amartha/src/account/controller"
 	loanController "amartha/src/loan/controller"
 	"amartha/src/utils/config"
 	"fmt"
@@ -18,6 +19,7 @@ type Server struct {
 
 type Controllers struct {
 	loanController.LoanController
+	accountController.AccountController
 }
 
 var RoutesSet = wire.NewSet(wire.Struct(new(Controllers), "*"), NewServer)

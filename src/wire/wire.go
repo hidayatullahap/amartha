@@ -4,6 +4,7 @@
 package wire
 
 import (
+	accountController "amartha/src/account/controller"
 	loanController "amartha/src/loan/controller"
 	loanService "amartha/src/loan/service"
 
@@ -21,6 +22,7 @@ func Initialize() (*server.Server, func(), error) {
 			config.LoadConfig,
 			loanService.NewLoanService,
 			loanController.NewLoanController,
+			accountController.NewAccountController,
 			echo.NewEcho,
 			server.RoutesSet,
 		),
