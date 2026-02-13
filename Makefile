@@ -7,7 +7,6 @@ wire:
 run:
 	go run main.go
 
-
 .PHONY: sqlc-gen
 sqlc-gen:
 	.\bin\sqlc.exe generate
