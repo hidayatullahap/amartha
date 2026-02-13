@@ -24,6 +24,16 @@ func NewDBConnection(config *config.Config) *sql.DB {
 		log.Fatalf("Error executing DDL: %v", err)
 	}
 
+	q := sqlc.New(db)
+	hasSeed, _ := q.GetFlag(ctx, HAS_SEED)
+	if hasSeed.Value != "true" {
+		if _, err := db.ExecContext(ctx, ddl.Seeds); err != nil {
+			log.Fatalf("Error executing seed: %v", err)
+		}
+
+		q.InsertFlag(ctx, sqlc.InsertFlagParams{Key: HAS_SEED, Value: "true"})
+	}
+
 	return db
 }
 
