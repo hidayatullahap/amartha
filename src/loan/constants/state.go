@@ -37,7 +37,18 @@ func (s LoanState) IsValid() bool {
 }
 
 func CanUpdateState(currentState, newState LoanState) bool {
-	return newState >= currentState && newState.IsValid()
+	if currentState == newState {
+		return true
+	}
+
+	allowed := map[LoanState]LoanState{
+		StateProposed: StateApproved,
+		StateApproved: StateInvested,
+		StateInvested: StateDisbursed,
+	}
+
+	next, exists := allowed[currentState]
+	return exists && next == newState
 }
 
 func ToLoanState(s string) (LoanState, bool) {

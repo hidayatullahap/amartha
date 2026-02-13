@@ -88,7 +88,7 @@ func TestCanUpdateState(t *testing.T) {
 			name:         "Valid transition from proposed to disbursed",
 			currentState: StateProposed,
 			newState:     StateDisbursed,
-			expected:     true,
+			expected:     false,
 		},
 		{
 			name:         "Invalid transition backwards",
