@@ -13,6 +13,7 @@ import (
 	"amartha/src/utils/database"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/echo/middleware"
+	"amartha/src/utils/event"
 	"amartha/src/utils/server"
 
 	"github.com/google/wire"
@@ -26,6 +27,7 @@ func Initialize() (*server.Server, func(), error) {
 			database.NewQueries,
 			database.NewDBConnection,
 			config.LoadConfig,
+			event.NewLoanEvent,
 			loanService.NewLoanService,
 			loanService.NewGuardLoanService,
 			accountService.NewAccountService,

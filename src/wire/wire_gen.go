@@ -15,6 +15,7 @@ import (
 	"amartha/src/utils/database"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/echo/middleware"
+	"amartha/src/utils/event"
 	"amartha/src/utils/server"
 )
 
@@ -29,7 +30,8 @@ func Initialize() (*server.Server, func(), error) {
 	configConfig := config.LoadConfig()
 	db := database.NewDBConnection(configConfig)
 	queries := database.NewQueries(db)
-	loanService := service.NewLoanService(db, queries)
+	loanEvent := event.NewLoanEvent()
+	loanService := service.NewLoanService(db, queries, loanEvent)
 	authMiddleware := middleware.NewAuthMiddleware(queries)
 	guardLoanService := service.NewGuardLoanService(queries)
 	loanController := controller.NewLoanController(loanService, authMiddleware, guardLoanService)
@@ -39,7 +41,7 @@ func Initialize() (*server.Server, func(), error) {
 		LoanController:    loanController,
 		AccountController: accountController,
 	}
-	serverServer := server.NewServer(echoEcho, controllers, configConfig)
+	serverServer := server.NewServer(echoEcho, controllers, configConfig, loanEvent)
 	return serverServer, func() {
 	}, nil
 }

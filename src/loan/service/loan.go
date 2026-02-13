@@ -6,8 +6,10 @@ import (
 	"amartha/src/loan/request"
 	"amartha/src/loan/response"
 	uerror "amartha/src/utils/error"
+	"amartha/src/utils/event"
 	"context"
 	"database/sql"
+	"log"
 	"time"
 
 	"github.com/google/uuid"
@@ -23,12 +25,13 @@ type LoanService interface {
 }
 
 type loanService struct {
-	db      *sql.DB
-	queries *sqlc.Queries
+	db        *sql.DB
+	queries   *sqlc.Queries
+	loanEvent *event.LoanEvent
 }
 
-func NewLoanService(db *sql.DB, queries *sqlc.Queries) LoanService {
-	return loanService{db, queries}
+func NewLoanService(db *sql.DB, queries *sqlc.Queries, loanEvent *event.LoanEvent) LoanService {
+	return loanService{db, queries, loanEvent}
 }
 
 func (s loanService) CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*response.CreateLoanResponse, error) {
@@ -110,7 +113,11 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 			return nil, err
 		}
 
-		// TODO: Trigger email send
+		select {
+		case s.loanEvent.EmailChan <- event.EmailEvent{LoanID: req.LoanID}:
+		default:
+			log.Println("Email buffer full, skipping event")
+		}
 	}
 
 	if err := tx.Commit(); err != nil {
