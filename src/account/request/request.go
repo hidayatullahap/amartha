@@ -1,5 +1,5 @@
 package request
 
-type LogiRequest struct {
+type LoginRequest struct {
 	Username string `json:"username"`
 }

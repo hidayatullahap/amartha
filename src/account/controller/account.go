@@ -23,7 +23,7 @@ func NewAccountController(svc service.AccountService) AccountController {
 func (r *AccountController) DecorateRoutes(e *echo.Echo) {
 	routeGroup := e.Group("/account")
 	routeGroup.POST("/login", func(c *echo.Context) error {
-		body := new(request.LogiRequest)
+		body := new(request.LoginRequest)
 
 		if err := c.Bind(body); err != nil {
 			code := uerror.GetHttpCodeByError(err)

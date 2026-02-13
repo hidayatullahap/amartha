@@ -2,10 +2,14 @@ package controller
 
 import (
 	"amartha/src/loan/constants"
+	"amartha/src/loan/request"
 	"amartha/src/loan/service"
 	"amartha/src/utils/echo/middleware"
+	uerror "amartha/src/utils/error"
 	"fmt"
 	"net/http"
+
+	uecho "amartha/src/utils/echo"
 
 	"github.com/labstack/echo/v5"
 )
@@ -25,8 +29,22 @@ func NewLoanController(svc service.LoanService, auth *middleware.AuthMiddleware)
 func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 	routeGroup := e.Group("/loans", r.auth.Authenticate)
 	routeGroup.POST("", func(c *echo.Context) error {
-		r.svc.CreateLoan()
-		return c.JSON(http.StatusOK, "[TODO] Create a new loan state: proposed")
+		var body request.CreateLoanRequest
+
+		if err := c.Bind(&body); err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+
+		user := uecho.GetAuthUser(c)
+		body.BorrowerId = user.ID
+
+		data, err := r.svc.CreateLoan(c.Request().Context(), body)
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+		return c.JSON(http.StatusOK, data)
 	})
 	routeGroup.POST("/:id/approve", func(c *echo.Context) error {
 		id := c.Param("id")

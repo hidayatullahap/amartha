@@ -1,11 +1,16 @@
 package service
 
-import "fmt"
+import (
+	"amartha/src/loan/request"
+	"context"
+	"fmt"
+	"log"
+)
 
 type LoanService interface {
 	GetLoans()
 	GetLoan()
-	CreateLoan()
+	CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*request.CreateLoanRequest, error)
 	ApproveLoan()
 	InvestLoan()
 	DisburseLoan()
@@ -22,8 +27,9 @@ func (s loanService) ApproveLoan() {
 	fmt.Println("approve loan")
 }
 
-func (s loanService) CreateLoan() {
-	fmt.Println("create loan")
+func (s loanService) CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*request.CreateLoanRequest, error) {
+	log.Println(req)
+	return &req, nil
 }
 
 func (s loanService) DisburseLoan() {
