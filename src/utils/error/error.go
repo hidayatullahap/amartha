@@ -1,6 +1,7 @@
 package error
 
 import (
+	"database/sql"
 	"errors"
 	"net/http"
 )
@@ -17,6 +18,7 @@ var httpStatusToErrors = map[int][]error{
 	},
 	http.StatusNotFound: {
 		ErrDataNotFound,
+		sql.ErrNoRows,
 	},
 	http.StatusUnauthorized: {
 		ErrUnauthorized,
