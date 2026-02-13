@@ -59,8 +59,8 @@ func (q *Queries) CreateLoan(ctx context.Context, arg CreateLoanParams) error {
 }
 
 const createLoanDetail = `-- name: CreateLoanDetail :exec
-INSERT INTO loan_details (loan_id, field_validator_id, visit_proof_url, approved_at, field_officer_id)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO loan_details (loan_id, field_validator_id, visit_proof_url, approved_at)
+VALUES (?, ?, ?, ?)
 `
 
 type CreateLoanDetailParams struct {
@@ -68,7 +68,6 @@ type CreateLoanDetailParams struct {
 	FieldValidatorID sql.NullInt64
 	VisitProofUrl    sql.NullString
 	ApprovedAt       sql.NullTime
-	FieldOfficerID   sql.NullInt64
 }
 
 func (q *Queries) CreateLoanDetail(ctx context.Context, arg CreateLoanDetailParams) error {
@@ -77,7 +76,6 @@ func (q *Queries) CreateLoanDetail(ctx context.Context, arg CreateLoanDetailPara
 		arg.FieldValidatorID,
 		arg.VisitProofUrl,
 		arg.ApprovedAt,
-		arg.FieldOfficerID,
 	)
 	return err
 }
@@ -152,6 +150,32 @@ func (q *Queries) ListLoans(ctx context.Context) ([]Loan, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateDisbursementDetails = `-- name: UpdateDisbursementDetails :exec
+UPDATE loan_details
+SET 
+    field_officer_id = ?,
+    signed_agreement_url = ?,
+    disbursed_at = ?
+WHERE loan_id = ?
+`
+
+type UpdateDisbursementDetailsParams struct {
+	FieldOfficerID     sql.NullInt64
+	SignedAgreementUrl sql.NullString
+	DisbursedAt        sql.NullTime
+	LoanID             string
+}
+
+func (q *Queries) UpdateDisbursementDetails(ctx context.Context, arg UpdateDisbursementDetailsParams) error {
+	_, err := q.db.ExecContext(ctx, updateDisbursementDetails,
+		arg.FieldOfficerID,
+		arg.SignedAgreementUrl,
+		arg.DisbursedAt,
+		arg.LoanID,
+	)
+	return err
 }
 
 const updateLoanPrincipleAmount = `-- name: UpdateLoanPrincipleAmount :exec

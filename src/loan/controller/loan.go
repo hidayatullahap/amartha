@@ -106,14 +106,26 @@ func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 
 	routeGroup.POST("/:id/disburse", func(c *echo.Context) error {
 		id := c.Param("id")
+		var body request.DisburseLoanRequest
+
+		if err := c.Bind(&body); err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+		body.LoanID = id
+
 		_, _, err := r.guard.ValidateStatusTransition(c.Request().Context(), id, constants.StateDisbursed.String())
 		if err != nil {
 			code := uerror.GetHttpCodeByError(err)
 			return echo.NewHTTPError(code, err.Error())
 		}
 
-		r.svc.DisburseLoan()
-		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Disburse loan id: %s", id))
+		err = r.svc.DisburseLoan(c.Request().Context(), body)
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+		return c.NoContent(http.StatusOK)
 	})
 
 	routeGroup.GET("/:id", func(c *echo.Context) error {

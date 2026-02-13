@@ -10,8 +10,8 @@ INSERT INTO loans (id, borrower_id, principal_amount, rate, roi, agreement_lette
 VALUES (?, ?, ?, ?, ?, ?);
 
 -- name: CreateLoanDetail :exec
-INSERT INTO loan_details (loan_id, field_validator_id, visit_proof_url, approved_at, field_officer_id)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO loan_details (loan_id, field_validator_id, visit_proof_url, approved_at)
+VALUES (?, ?, ?, ?);
 
 -- name: UpdateLoanPrincipleAmount :exec
 UPDATE loans
@@ -31,3 +31,11 @@ WHERE loan_id = ?;
 UPDATE loans
 SET state = ?
 WHERE id = ?;
+
+-- name: UpdateDisbursementDetails :exec
+UPDATE loan_details
+SET 
+    field_officer_id = ?,
+    signed_agreement_url = ?,
+    disbursed_at = ?
+WHERE loan_id = ?;

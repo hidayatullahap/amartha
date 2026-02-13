@@ -14,7 +14,6 @@ type CreateLoanDetailRequest struct {
 	LoanID           string    `json:"-"`
 	FieldValidatorID int64     `json:"field_validator_id"`
 	VisitProofUrl    string    `json:"visit_proof_url"`
-	FieldOfficerID   int64     `json:"field_officer_id"`
 	ApprovalDate     time.Time `json:"approval_date"`
 }
 
@@ -22,4 +21,10 @@ type CreateInvestRequest struct {
 	LoanID     string `json:"-"`
 	Amount     int64  `json:"amount"`
 	InvestorId int64  `json:"-"`
+}
+
+type DisburseLoanRequest struct {
+	LoanID             string `json:"loan_id"`
+	FieldOfficerID     int64  `json:"field_officer_id"`
+	SignedAgreementURL string `json:"signed_agreement_url"`
 }

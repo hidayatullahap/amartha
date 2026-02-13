@@ -9,6 +9,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -19,7 +20,7 @@ type LoanService interface {
 	CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*response.CreateLoanResponse, error)
 	ApproveLoan(ctx context.Context, req request.CreateLoanDetailRequest) (*response.CreateLoanDetailResponse, error)
 	InvestLoan(ctx context.Context, req request.CreateInvestRequest) (*response.CreateLoanInvestResponse, error)
-	DisburseLoan()
+	DisburseLoan(ctx context.Context, req request.DisburseLoanRequest) error
 }
 
 type loanService struct {
@@ -56,7 +57,6 @@ func (s loanService) ApproveLoan(ctx context.Context, req request.CreateLoanDeta
 		FieldValidatorID: sql.NullInt64{Valid: true, Int64: req.FieldValidatorID},
 		VisitProofUrl:    sql.NullString{Valid: true, String: req.VisitProofUrl},
 		ApprovedAt:       sql.NullTime{Valid: true, Time: req.ApprovalDate},
-		FieldOfficerID:   sql.NullInt64{Valid: true, Int64: req.FieldOfficerID},
 	})
 	if err != nil {
 		return nil, err
@@ -65,10 +65,6 @@ func (s loanService) ApproveLoan(ctx context.Context, req request.CreateLoanDeta
 	return &response.CreateLoanDetailResponse{
 		LoanID: req.LoanID,
 	}, nil
-}
-
-func (s loanService) DisburseLoan() {
-	fmt.Println("disburse loan")
 }
 
 func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestRequest) (*response.CreateLoanInvestResponse, error) {
@@ -126,6 +122,36 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 		LoanID:       req.LoanID,
 		InvestmentId: investmentID,
 	}, nil
+}
+
+func (s loanService) DisburseLoan(ctx context.Context, req request.DisburseLoanRequest) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	qtx := s.queries.WithTx(tx)
+
+	err = qtx.UpdateLoanState(ctx, sqlc.UpdateLoanStateParams{
+		ID:    req.LoanID,
+		State: sql.NullString{Valid: true, String: constants.StateDisbursed.String()},
+	})
+	if err != nil {
+		return err
+	}
+
+	err = qtx.UpdateDisbursementDetails(ctx, sqlc.UpdateDisbursementDetailsParams{
+		LoanID:             req.LoanID,
+		FieldOfficerID:     sql.NullInt64{Int64: req.FieldOfficerID, Valid: true},
+		SignedAgreementUrl: sql.NullString{String: req.SignedAgreementURL, Valid: true},
+		DisbursedAt:        sql.NullTime{Time: time.Now(), Valid: true},
+	})
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (s loanService) GetLoans() {
