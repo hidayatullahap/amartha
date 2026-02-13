@@ -32,10 +32,6 @@ func (s LoanState) String() string {
 	return stateNames[s]
 }
 
-func (s LoanState) IsValid() bool {
-	return s >= StateProposed && s <= StateDisbursed
-}
-
 func CanUpdateState(currentState, newState LoanState) bool {
 	if currentState == newState {
 		return true

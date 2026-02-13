@@ -162,3 +162,68 @@ func TestString(t *testing.T) {
 		})
 	}
 }
+func TestToLoanStateValidStates(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		expected LoanState
+		ok       bool
+	}{
+		{
+			name:     "Valid proposed state",
+			input:    "proposed",
+			expected: StateProposed,
+			ok:       true,
+		},
+		{
+			name:     "Valid approved state",
+			input:    "approved",
+			expected: StateApproved,
+			ok:       true,
+		},
+		{
+			name:     "Valid invested state",
+			input:    "invested",
+			expected: StateInvested,
+			ok:       true,
+		},
+		{
+			name:     "Valid disbursed state",
+			input:    "disbursed",
+			expected: StateDisbursed,
+			ok:       true,
+		},
+		{
+			name:     "Invalid state",
+			input:    "unknown",
+			expected: 0,
+			ok:       false,
+		},
+		{
+			name:     "Empty string",
+			input:    "",
+			expected: 0,
+			ok:       false,
+		},
+		{
+			name:     "Case sensitive - lowercase invalid",
+			input:    "PROPOSED",
+			expected: 0,
+			ok:       false,
+		},
+		{
+			name:     "Whitespace handling",
+			input:    " proposed",
+			expected: 0,
+			ok:       false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			state, ok := ToLoanState(tt.input)
+			assert.Equal(t, tt.expected, state)
+			assert.Equal(t, tt.ok, ok)
+		})
+	}
+}
