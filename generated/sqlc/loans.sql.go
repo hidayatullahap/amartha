@@ -7,7 +7,34 @@ package sqlc
 
 import (
 	"context"
+	"database/sql"
 )
+
+const createLoan = `-- name: CreateLoan :exec
+INSERT INTO loans (id, borrower_id, principal_amount, rate, roi, agreement_letter_url)
+VALUES (?, ?, ?, ?, ?, ?)
+`
+
+type CreateLoanParams struct {
+	ID                 string
+	BorrowerID         int64
+	PrincipalAmount    float64
+	Rate               float64
+	Roi                float64
+	AgreementLetterUrl sql.NullString
+}
+
+func (q *Queries) CreateLoan(ctx context.Context, arg CreateLoanParams) error {
+	_, err := q.db.ExecContext(ctx, createLoan,
+		arg.ID,
+		arg.BorrowerID,
+		arg.PrincipalAmount,
+		arg.Rate,
+		arg.Roi,
+		arg.AgreementLetterUrl,
+	)
+	return err
+}
 
 const getLoan = `-- name: GetLoan :one
 SELECT id, borrower_id, principal_amount, rate, roi, agreement_letter_url, state, total_invested, created_at FROM loans
