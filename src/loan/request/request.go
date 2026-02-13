@@ -19,6 +19,7 @@ type CreateLoanDetailRequest struct {
 }
 
 type CreateInvestRequest struct {
-	LoanID string `json:"-"`
-	Amount int64  `json:"amount"`
+	LoanID     string `json:"-"`
+	Amount     int64  `json:"amount"`
+	InvestorId int64  `json:"-"`
 }

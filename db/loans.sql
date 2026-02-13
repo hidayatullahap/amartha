@@ -18,3 +18,8 @@ UPDATE loans
 SET principal_amount = principal_amount - ?,
     state = ?
 WHERE id = ?;
+
+-- name: CreateInvestment :exec
+INSERT INTO investments (id, loan_id, investor_id, amount)
+VALUES (?, ?, ?, ?);
+

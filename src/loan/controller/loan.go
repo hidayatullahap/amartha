@@ -87,6 +87,9 @@ func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 		}
 		body.LoanID = id
 
+		user := uecho.GetAuthUser(c)
+		body.InvestorId = user.ID
+
 		_, _, err := r.guard.ValidateStatusTransition(c.Request().Context(), id, constants.StateInvested.String())
 		if err != nil {
 			code := uerror.GetHttpCodeByError(err)

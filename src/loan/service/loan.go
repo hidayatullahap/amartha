@@ -79,6 +79,14 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 		return nil, err
 	}
 
+	id := uuid.NewString()
+	err = s.queries.CreateInvestment(ctx, sqlc.CreateInvestmentParams{
+		ID:         id,
+		LoanID:     req.LoanID,
+		InvestorID: req.InvestorId,
+		Amount:     float64(req.Amount),
+	})
+
 	return &response.CreateLoanInvestResponse{
 		LoanID: req.LoanID,
 	}, nil

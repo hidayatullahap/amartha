@@ -10,6 +10,28 @@ import (
 	"database/sql"
 )
 
+const createInvestment = `-- name: CreateInvestment :exec
+INSERT INTO investments (id, loan_id, investor_id, amount)
+VALUES (?, ?, ?, ?)
+`
+
+type CreateInvestmentParams struct {
+	ID         string
+	LoanID     string
+	InvestorID int64
+	Amount     float64
+}
+
+func (q *Queries) CreateInvestment(ctx context.Context, arg CreateInvestmentParams) error {
+	_, err := q.db.ExecContext(ctx, createInvestment,
+		arg.ID,
+		arg.LoanID,
+		arg.InvestorID,
+		arg.Amount,
+	)
+	return err
+}
+
 const createLoan = `-- name: CreateLoan :exec
 INSERT INTO loans (id, borrower_id, principal_amount, rate, roi, agreement_letter_url)
 VALUES (?, ?, ?, ?, ?, ?)
