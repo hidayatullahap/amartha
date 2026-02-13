@@ -29,7 +29,7 @@ func Initialize() (*server.Server, func(), error) {
 	configConfig := config.LoadConfig()
 	db := database.NewDBConnection(configConfig)
 	queries := database.NewQueries(db)
-	loanService := service.NewLoanService(queries)
+	loanService := service.NewLoanService(db, queries)
 	authMiddleware := middleware.NewAuthMiddleware(queries)
 	guardLoanService := service.NewGuardLoanService(queries)
 	loanController := controller.NewLoanController(loanService, authMiddleware, guardLoanService)

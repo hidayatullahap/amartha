@@ -97,10 +97,10 @@ func TestCanUpdateState(t *testing.T) {
 			expected:     false,
 		},
 		{
-			name:         "Invalid transition same state",
+			name:         "Valid transition same state",
 			currentState: StateApproved,
 			newState:     StateApproved,
-			expected:     false,
+			expected:     true,
 		},
 		{
 			name:         "Invalid transition with invalid new state",

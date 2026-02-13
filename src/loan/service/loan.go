@@ -22,11 +22,12 @@ type LoanService interface {
 }
 
 type loanService struct {
+	db      *sql.DB
 	queries *sqlc.Queries
 }
 
-func NewLoanService(queries *sqlc.Queries) LoanService {
-	return loanService{queries}
+func NewLoanService(db *sql.DB, queries *sqlc.Queries) LoanService {
+	return loanService{db, queries}
 }
 
 func (s loanService) CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*response.CreateLoanResponse, error) {
@@ -70,7 +71,16 @@ func (s loanService) DisburseLoan() {
 }
 
 func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestRequest) (*response.CreateLoanInvestResponse, error) {
-	err := s.queries.UpdateLoanPrincipleAmount(ctx, sqlc.UpdateLoanPrincipleAmountParams{
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	defer tx.Rollback()
+
+	qtx := s.queries.WithTx(tx)
+
+	err = qtx.UpdateLoanPrincipleAmount(ctx, sqlc.UpdateLoanPrincipleAmountParams{
 		ID:              req.LoanID,
 		PrincipalAmount: float64(req.Amount),
 		State:           sql.NullString{Valid: true, String: constants.StateInvested.String()},
@@ -80,15 +90,23 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 	}
 
 	id := uuid.NewString()
-	err = s.queries.CreateInvestment(ctx, sqlc.CreateInvestmentParams{
+	err = qtx.CreateInvestment(ctx, sqlc.CreateInvestmentParams{
 		ID:         id,
 		LoanID:     req.LoanID,
 		InvestorID: req.InvestorId,
 		Amount:     float64(req.Amount),
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
 
 	return &response.CreateLoanInvestResponse{
-		LoanID: req.LoanID,
+		LoanID:       req.LoanID,
+		InvestmentId: id,
 	}, nil
 }
 

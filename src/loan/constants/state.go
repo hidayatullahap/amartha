@@ -37,7 +37,7 @@ func (s LoanState) IsValid() bool {
 }
 
 func CanUpdateState(currentState, newState LoanState) bool {
-	return newState > currentState && newState.IsValid()
+	return newState >= currentState && newState.IsValid()
 }
 
 func ToLoanState(s string) (LoanState, bool) {
