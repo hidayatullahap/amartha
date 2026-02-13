@@ -29,10 +29,10 @@ func Initialize() (*server.Server, func(), error) {
 	configConfig := config.LoadConfig()
 	db := database.NewDBConnection(configConfig)
 	queries := database.NewQueries(db)
-	guardLoanService := service.NewGuardLoanService(queries)
-	loanService := service.NewLoanService(queries, guardLoanService)
+	loanService := service.NewLoanService(queries)
 	authMiddleware := middleware.NewAuthMiddleware(queries)
-	loanController := controller.NewLoanController(loanService, authMiddleware)
+	guardLoanService := service.NewGuardLoanService(queries)
+	loanController := controller.NewLoanController(loanService, authMiddleware, guardLoanService)
 	accountService := service2.NewAccountService(queries)
 	accountController := controller2.NewAccountController(accountService)
 	controllers := &server.Controllers{

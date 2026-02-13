@@ -15,14 +15,20 @@ import (
 )
 
 type LoanController struct {
-	svc  service.LoanService
-	auth *middleware.AuthMiddleware
+	svc   service.LoanService
+	auth  *middleware.AuthMiddleware
+	guard service.GuardLoanService
 }
 
-func NewLoanController(svc service.LoanService, auth *middleware.AuthMiddleware) LoanController {
+func NewLoanController(
+	svc service.LoanService,
+	auth *middleware.AuthMiddleware,
+	guard service.GuardLoanService,
+) LoanController {
 	return LoanController{
 		svc,
 		auth,
+		guard,
 	}
 }
 
@@ -46,26 +52,49 @@ func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 		}
 		return c.JSON(http.StatusOK, data)
 	})
+
 	routeGroup.POST("/:id/approve", func(c *echo.Context) error {
 		id := c.Param("id")
+		_, _, err := r.guard.ValidateStatusTransition(c.Request().Context(), id, constants.StateApproved.String())
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+
 		r.svc.ApproveLoan()
 		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Approve loan id: %s", id))
 	}, r.auth.Authorize(constants.AdminRoles))
+
 	routeGroup.POST("/:id/invest", func(c *echo.Context) error {
 		id := c.Param("id")
+		_, _, err := r.guard.ValidateStatusTransition(c.Request().Context(), id, constants.StateInvested.String())
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+
 		r.svc.InvestLoan()
 		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Invest loan id: %s", id))
 	})
+
 	routeGroup.POST("/:id/disburse", func(c *echo.Context) error {
 		id := c.Param("id")
+		_, _, err := r.guard.ValidateStatusTransition(c.Request().Context(), id, constants.StateDisbursed.String())
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+
 		r.svc.DisburseLoan()
 		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Disburse loan id: %s", id))
 	})
+
 	routeGroup.GET("/:id", func(c *echo.Context) error {
 		id := c.Param("id")
 		r.svc.GetLoan()
 		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Loan details for id: %s", id))
 	})
+
 	routeGroup.GET("", func(c *echo.Context) error {
 		r.svc.GetLoans()
 		return c.JSON(http.StatusOK, "[TODO] Loan list")
