@@ -7,9 +7,10 @@ import (
 )
 
 var (
-	ErrGeneral      = errors.New("terdapat kesalahan pada sistem")
-	ErrDataNotFound = errors.New("data tidak ditemukan")
-	ErrUnauthorized = errors.New("unauthorized")
+	ErrGeneral                = errors.New("terdapat kesalahan pada sistem")
+	ErrDataNotFound           = errors.New("data tidak ditemukan")
+	ErrUnauthorized           = errors.New("unauthorized")
+	ErrInvalidLoanStateUpdate = errors.New("tidak bisa melakukan perubahan status")
 )
 
 var httpStatusToErrors = map[int][]error{
@@ -19,6 +20,9 @@ var httpStatusToErrors = map[int][]error{
 	http.StatusNotFound: {
 		ErrDataNotFound,
 		sql.ErrNoRows,
+	},
+	http.StatusPreconditionFailed: {
+		ErrInvalidLoanStateUpdate,
 	},
 	http.StatusUnauthorized: {
 		ErrUnauthorized,

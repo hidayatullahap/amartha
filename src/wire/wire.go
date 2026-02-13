@@ -27,6 +27,7 @@ func Initialize() (*server.Server, func(), error) {
 			database.NewDBConnection,
 			config.LoadConfig,
 			loanService.NewLoanService,
+			loanService.NewGuardLoanService,
 			accountService.NewAccountService,
 			loanController.NewLoanController,
 			accountController.NewAccountController,

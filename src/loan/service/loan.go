@@ -19,10 +19,11 @@ type LoanService interface {
 
 type loanService struct {
 	queries *sqlc.Queries
+	guard   GuardLoanService
 }
 
-func NewLoanService(queries *sqlc.Queries) LoanService {
-	return loanService{queries}
+func NewLoanService(queries *sqlc.Queries, guard GuardLoanService) LoanService {
+	return loanService{queries, guard}
 }
 
 func (s loanService) ApproveLoan() {
