@@ -104,6 +104,19 @@ func (q *Queries) GetLoan(ctx context.Context, id string) (Loan, error) {
 	return i, err
 }
 
+const getTotalInvestment = `-- name: GetTotalInvestment :one
+SELECT SUM(amount) AS total_invested 
+FROM investments 
+WHERE loan_id = ?
+`
+
+func (q *Queries) GetTotalInvestment(ctx context.Context, loanID string) (sql.NullFloat64, error) {
+	row := q.db.QueryRowContext(ctx, getTotalInvestment, loanID)
+	var total_invested sql.NullFloat64
+	err := row.Scan(&total_invested)
+	return total_invested, err
+}
+
 const listLoans = `-- name: ListLoans :many
 SELECT id, borrower_id, principal_amount, rate, roi, agreement_letter_url, state, total_invested, created_at FROM loans
 `
@@ -143,18 +156,32 @@ func (q *Queries) ListLoans(ctx context.Context) ([]Loan, error) {
 
 const updateLoanPrincipleAmount = `-- name: UpdateLoanPrincipleAmount :exec
 UPDATE loans
-SET principal_amount = principal_amount - ?,
-    state = ?
+SET principal_amount = principal_amount - ?
 WHERE id = ?
 `
 
 type UpdateLoanPrincipleAmountParams struct {
 	PrincipalAmount float64
-	State           sql.NullString
 	ID              string
 }
 
 func (q *Queries) UpdateLoanPrincipleAmount(ctx context.Context, arg UpdateLoanPrincipleAmountParams) error {
-	_, err := q.db.ExecContext(ctx, updateLoanPrincipleAmount, arg.PrincipalAmount, arg.State, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateLoanPrincipleAmount, arg.PrincipalAmount, arg.ID)
+	return err
+}
+
+const updateLoanState = `-- name: UpdateLoanState :exec
+UPDATE loans
+SET state = ?
+WHERE id = ?
+`
+
+type UpdateLoanStateParams struct {
+	State sql.NullString
+	ID    string
+}
+
+func (q *Queries) UpdateLoanState(ctx context.Context, arg UpdateLoanStateParams) error {
+	_, err := q.db.ExecContext(ctx, updateLoanState, arg.State, arg.ID)
 	return err
 }

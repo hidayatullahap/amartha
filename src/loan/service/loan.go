@@ -5,6 +5,7 @@ import (
 	"amartha/src/loan/constants"
 	"amartha/src/loan/request"
 	"amartha/src/loan/response"
+	uerror "amartha/src/utils/error"
 	"context"
 	"database/sql"
 	"fmt"
@@ -75,23 +76,28 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 	if err != nil {
 		return nil, err
 	}
-
 	defer tx.Rollback()
 
 	qtx := s.queries.WithTx(tx)
 
-	err = qtx.UpdateLoanPrincipleAmount(ctx, sqlc.UpdateLoanPrincipleAmountParams{
-		ID:              req.LoanID,
-		PrincipalAmount: float64(req.Amount),
-		State:           sql.NullString{Valid: true, String: constants.StateInvested.String()},
-	})
+	loan, err := qtx.GetLoan(ctx, req.LoanID)
 	if err != nil {
 		return nil, err
 	}
 
-	id := uuid.NewString()
+	currentTotal, err := qtx.GetTotalInvestment(ctx, req.LoanID)
+	if err != nil {
+		return nil, err
+	}
+
+	newTotal := currentTotal.Float64 + float64(req.Amount)
+	if newTotal > loan.PrincipalAmount {
+		return nil, uerror.ErrExceedsPrincipleAmount
+	}
+
+	investmentID := uuid.NewString()
 	err = qtx.CreateInvestment(ctx, sqlc.CreateInvestmentParams{
-		ID:         id,
+		ID:         investmentID,
 		LoanID:     req.LoanID,
 		InvestorID: req.InvestorId,
 		Amount:     float64(req.Amount),
@@ -100,13 +106,25 @@ func (s loanService) InvestLoan(ctx context.Context, req request.CreateInvestReq
 		return nil, err
 	}
 
+	if newTotal == loan.PrincipalAmount {
+		err = qtx.UpdateLoanState(ctx, sqlc.UpdateLoanStateParams{
+			ID:    req.LoanID,
+			State: sql.NullString{Valid: true, String: constants.StateInvested.String()},
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		// TODO: Trigger email send
+	}
+
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
 	return &response.CreateLoanInvestResponse{
 		LoanID:       req.LoanID,
-		InvestmentId: id,
+		InvestmentId: investmentID,
 	}, nil
 }
 

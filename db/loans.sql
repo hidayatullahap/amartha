@@ -15,11 +15,19 @@ VALUES (?, ?, ?, ?, ?);
 
 -- name: UpdateLoanPrincipleAmount :exec
 UPDATE loans
-SET principal_amount = principal_amount - ?,
-    state = ?
+SET principal_amount = principal_amount - ?
 WHERE id = ?;
 
 -- name: CreateInvestment :exec
 INSERT INTO investments (id, loan_id, investor_id, amount)
 VALUES (?, ?, ?, ?);
 
+-- name: GetTotalInvestment :one
+SELECT SUM(amount) AS total_invested 
+FROM investments 
+WHERE loan_id = ?;
+
+-- name: UpdateLoanState :exec
+UPDATE loans
+SET state = ?
+WHERE id = ?;

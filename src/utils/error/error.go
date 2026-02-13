@@ -13,6 +13,7 @@ var (
 	ErrDataNotFound           = errors.New("data tidak ditemukan")
 	ErrUnauthorized           = errors.New("unauthorized")
 	ErrInvalidLoanStateUpdate = errors.New("tidak bisa melakukan perubahan status")
+	ErrExceedsPrincipleAmount = errors.New("investment exceeds loan principal amount")
 )
 
 var httpStatusToErrors = map[int][]error{
@@ -22,6 +23,9 @@ var httpStatusToErrors = map[int][]error{
 	http.StatusNotFound: {
 		ErrDataNotFound,
 		sql.ErrNoRows,
+	},
+	http.StatusBadRequest: {
+		ErrExceedsPrincipleAmount,
 	},
 	http.StatusPreconditionFailed: {
 		ErrInvalidLoanStateUpdate,
