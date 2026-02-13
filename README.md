@@ -1,6 +1,6 @@
 How to run:
 
-run this command on termimal
+Run this command on termimal
 ```
 $ make run
 ```
@@ -9,6 +9,8 @@ To test the api download bruno
 https://www.usebruno.com/
 
 Open bruno > Collections> Open Collection > Select folder `./amartha/api_collection`
+
+Dont forget to select "development" environment
 
 - Available login usernames are: user1, user2, user3, admin
 - Their ids are: 1, 2, 3, 4 (for borrower/investor/reporter user id)
