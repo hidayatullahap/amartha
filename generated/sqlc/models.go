@@ -46,6 +46,7 @@ type LoanDetail struct {
 type User struct {
 	ID        int64
 	Username  string
+	Email     string
 	Role      string
 	CreatedAt sql.NullTime
 }

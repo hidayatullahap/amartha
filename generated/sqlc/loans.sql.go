@@ -80,6 +80,36 @@ func (q *Queries) CreateLoanDetail(ctx context.Context, arg CreateLoanDetailPara
 	return err
 }
 
+const getInvestorEmailsByLoanID = `-- name: GetInvestorEmailsByLoanID :many
+SELECT DISTINCT u.email
+FROM investments i
+JOIN users u ON i.investor_id = u.id
+WHERE i.loan_id = ?
+`
+
+func (q *Queries) GetInvestorEmailsByLoanID(ctx context.Context, loanID string) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getInvestorEmailsByLoanID, loanID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var email string
+		if err := rows.Scan(&email); err != nil {
+			return nil, err
+		}
+		items = append(items, email)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLoan = `-- name: GetLoan :one
 SELECT id, borrower_id, principal_amount, rate, roi, agreement_letter_url, state, total_invested, created_at FROM loans
 WHERE id = ? LIMIT 1

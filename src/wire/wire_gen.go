@@ -30,7 +30,7 @@ func Initialize() (*server.Server, func(), error) {
 	configConfig := config.LoadConfig()
 	db := database.NewDBConnection(configConfig)
 	queries := database.NewQueries(db)
-	loanEvent := event.NewLoanEvent()
+	loanEvent := event.NewLoanEvent(queries)
 	loanService := service.NewLoanService(db, queries, loanEvent)
 	authMiddleware := middleware.NewAuthMiddleware(queries)
 	guardLoanService := service.NewGuardLoanService(queries)

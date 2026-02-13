@@ -39,3 +39,9 @@ SET
     signed_agreement_url = ?,
     disbursed_at = ?
 WHERE loan_id = ?;
+
+-- name: GetInvestorEmailsByLoanID :many
+SELECT DISTINCT u.email
+FROM investments i
+JOIN users u ON i.investor_id = u.id
+WHERE i.loan_id = ?;
