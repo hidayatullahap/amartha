@@ -13,3 +13,8 @@ VALUES (?, ?, ?, ?, ?, ?);
 INSERT INTO loan_details (loan_id, field_validator_id, visit_proof_url, approved_at, field_officer_id)
 VALUES (?, ?, ?, ?, ?);
 
+-- name: UpdateLoanPrincipleAmount :exec
+UPDATE loans
+SET principal_amount = principal_amount - ?,
+    state = ?
+WHERE id = ?;

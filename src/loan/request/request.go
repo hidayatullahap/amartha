@@ -17,3 +17,8 @@ type CreateLoanDetailRequest struct {
 	FieldOfficerID   int64     `json:"field_officer_id"`
 	ApprovalDate     time.Time `json:"approval_date"`
 }
+
+type CreateInvestRequest struct {
+	LoanID string `json:"-"`
+	Amount int64  `json:"amount"`
+}

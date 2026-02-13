@@ -118,3 +118,21 @@ func (q *Queries) ListLoans(ctx context.Context) ([]Loan, error) {
 	}
 	return items, nil
 }
+
+const updateLoanPrincipleAmount = `-- name: UpdateLoanPrincipleAmount :exec
+UPDATE loans
+SET principal_amount = principal_amount - ?,
+    state = ?
+WHERE id = ?
+`
+
+type UpdateLoanPrincipleAmountParams struct {
+	PrincipalAmount float64
+	State           sql.NullString
+	ID              string
+}
+
+func (q *Queries) UpdateLoanPrincipleAmount(ctx context.Context, arg UpdateLoanPrincipleAmountParams) error {
+	_, err := q.db.ExecContext(ctx, updateLoanPrincipleAmount, arg.PrincipalAmount, arg.State, arg.ID)
+	return err
+}

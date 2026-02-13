@@ -7,3 +7,7 @@ type CreateLoanResponse struct {
 type CreateLoanDetailResponse struct {
 	LoanID string `json:"loan_id"`
 }
+
+type CreateLoanInvestResponse struct {
+	LoanID string `json:"loan_id"`
+}
