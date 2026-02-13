@@ -35,4 +35,7 @@ func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 		id := c.Param("id")
 		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Loan details for id: %s", id))
 	})
+	routeGroup.GET("", func(c *echo.Context) error {
+		return c.JSON(http.StatusOK, "[TODO] Loan list")
+	})
 }

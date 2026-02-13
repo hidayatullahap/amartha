@@ -4,7 +4,7 @@
 package wire
 
 import (
-	loanController "amartha/src/loans/controller"
+	loanController "amartha/src/loan/controller"
 
 	"amartha/src/utils/config"
 	"amartha/src/utils/echo"

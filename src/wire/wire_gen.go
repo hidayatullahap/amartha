@@ -7,13 +7,11 @@
 package wire
 
 import (
-	"amartha/src/loans/controller"
+	"amartha/src/loan/controller"
 	"amartha/src/utils/config"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/server"
-)
 
-import (
 	_ "github.com/joho/godotenv/autoload"
 )
 

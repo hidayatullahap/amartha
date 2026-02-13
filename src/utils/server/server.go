@@ -1,7 +1,7 @@
 package server
 
 import (
-	loanController "amartha/src/loans/controller"
+	loanController "amartha/src/loan/controller"
 	"amartha/src/utils/config"
 	"fmt"
 	"log"
