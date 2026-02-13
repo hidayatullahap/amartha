@@ -6,7 +6,6 @@ import (
 	"amartha/src/loan/service"
 	"amartha/src/utils/echo/middleware"
 	uerror "amartha/src/utils/error"
-	"fmt"
 	"net/http"
 
 	uecho "amartha/src/utils/echo"
@@ -130,12 +129,20 @@ func (r *LoanController) DecorateRoutes(e *echo.Echo) {
 
 	routeGroup.GET("/:id", func(c *echo.Context) error {
 		id := c.Param("id")
-		r.svc.GetLoan()
-		return c.JSON(http.StatusOK, fmt.Sprintf("[TODO] Loan details for id: %s", id))
+		data, err := r.svc.GetLoan(c.Request().Context(), id)
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+		return c.JSON(http.StatusOK, data)
 	})
 
 	routeGroup.GET("", func(c *echo.Context) error {
-		r.svc.GetLoans()
-		return c.JSON(http.StatusOK, "[TODO] Loan list")
+		data, err := r.svc.GetLoans(c.Request().Context())
+		if err != nil {
+			code := uerror.GetHttpCodeByError(err)
+			return echo.NewHTTPError(code, err.Error())
+		}
+		return c.JSON(http.StatusOK, data)
 	})
 }

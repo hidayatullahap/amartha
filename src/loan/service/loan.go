@@ -8,15 +8,14 @@ import (
 	uerror "amartha/src/utils/error"
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
 )
 
 type LoanService interface {
-	GetLoans()
-	GetLoan()
+	GetLoans(ctx context.Context) ([]sqlc.Loan, error)
+	GetLoan(ctx context.Context, id string) (sqlc.Loan, error)
 	CreateLoan(ctx context.Context, req request.CreateLoanRequest) (*response.CreateLoanResponse, error)
 	ApproveLoan(ctx context.Context, req request.CreateLoanDetailRequest) (*response.CreateLoanDetailResponse, error)
 	InvestLoan(ctx context.Context, req request.CreateInvestRequest) (*response.CreateLoanInvestResponse, error)
@@ -154,10 +153,10 @@ func (s loanService) DisburseLoan(ctx context.Context, req request.DisburseLoanR
 	return tx.Commit()
 }
 
-func (s loanService) GetLoans() {
-	fmt.Println("get loans")
+func (s loanService) GetLoans(ctx context.Context) ([]sqlc.Loan, error) {
+	return s.queries.ListLoans(ctx)
 }
 
-func (s loanService) GetLoan() {
-	fmt.Println("get loan")
+func (s loanService) GetLoan(ctx context.Context, id string) (sqlc.Loan, error) {
+	return s.queries.GetLoan(ctx, id)
 }

@@ -5,9 +5,13 @@ meta {
 }
 
 get {
-  url: {{base_url}}/loans/1
+  url: {{base_url}}/loans/:id
   body: none
   auth: inherit
+}
+
+params:path {
+  id: {{loan_id}}
 }
 
 settings {
