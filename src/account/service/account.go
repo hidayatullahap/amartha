@@ -16,6 +16,10 @@ type accountService struct {
 	queries sqlc.Querier
 }
 
+var (
+	createToken = crypto.CreateToken
+)
+
 func NewAccountService(queries sqlc.Querier) AccountService {
 	return accountService{queries}
 }
@@ -26,7 +30,7 @@ func (s accountService) Login(ctx context.Context, username string) (*response.L
 		return nil, err
 	}
 
-	jwt, err := crypto.CreateToken(strconv.FormatInt(user.ID, 10))
+	jwt, err := createToken(strconv.FormatInt(user.ID, 10))
 	if err != nil {
 		return nil, err
 	}
