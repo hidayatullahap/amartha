@@ -54,13 +54,34 @@ func (s loanService) CreateLoan(ctx context.Context, req request.CreateLoanReque
 }
 
 func (s loanService) ApproveLoan(ctx context.Context, req request.CreateLoanDetailRequest) (*response.CreateLoanDetailResponse, error) {
-	err := s.queries.CreateLoanDetail(ctx, sqlc.CreateLoanDetailParams{
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	q, _ := s.queries.(*sqlc.Queries)
+	qtx := q.WithTx(tx)
+
+	err = qtx.CreateLoanDetail(ctx, sqlc.CreateLoanDetailParams{
 		LoanID:           req.LoanID,
 		FieldValidatorID: sql.NullInt64{Valid: true, Int64: req.FieldValidatorID},
 		VisitProofUrl:    sql.NullString{Valid: true, String: req.VisitProofUrl},
 		ApprovedAt:       sql.NullTime{Valid: true, Time: req.ApprovalDate},
 	})
 	if err != nil {
+		return nil, err
+	}
+
+	err = qtx.UpdateLoanState(ctx, sqlc.UpdateLoanStateParams{
+		ID:    req.LoanID,
+		State: sql.NullString{Valid: true, String: constants.StateApproved.String()},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
