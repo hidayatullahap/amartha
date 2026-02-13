@@ -8,6 +8,11 @@ import (
 	"database/sql"
 )
 
+type Flag struct {
+	Key   string
+	Value string
+}
+
 type Investment struct {
 	ID         string
 	LoanID     string
@@ -36,4 +41,11 @@ type LoanDetail struct {
 	FieldOfficerID     sql.NullString
 	SignedAgreementUrl sql.NullString
 	DisbursedAt        sql.NullTime
+}
+
+type User struct {
+	ID        string
+	Username  string
+	Role      string
+	CreatedAt sql.NullTime
 }
