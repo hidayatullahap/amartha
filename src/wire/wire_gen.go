@@ -8,10 +8,13 @@ package wire
 
 import (
 	"amartha/src/loan/controller"
+	"amartha/src/loan/service"
 	"amartha/src/utils/config"
 	"amartha/src/utils/echo"
 	"amartha/src/utils/server"
+)
 
+import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
@@ -19,7 +22,8 @@ import (
 
 func Initialize() (*server.Server, func(), error) {
 	echoEcho := echo.NewEcho()
-	loanController := controller.NewLoanController()
+	loanService := service.NewLoanService()
+	loanController := controller.NewLoanController(loanService)
 	controllers := &server.Controllers{
 		LoanController: loanController,
 	}

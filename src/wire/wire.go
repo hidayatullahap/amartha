@@ -5,6 +5,7 @@ package wire
 
 import (
 	loanController "amartha/src/loan/controller"
+	loanService "amartha/src/loan/service"
 
 	"amartha/src/utils/config"
 	"amartha/src/utils/echo"
@@ -18,6 +19,7 @@ func Initialize() (*server.Server, func(), error) {
 	panic(
 		wire.Build(
 			config.LoadConfig,
+			loanService.NewLoanService,
 			loanController.NewLoanController,
 			echo.NewEcho,
 			server.RoutesSet,
